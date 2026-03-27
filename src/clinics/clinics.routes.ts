@@ -1,0 +1,11 @@
+import express from 'express';
+import controller from './clinics.controller';
+const router = express.Router();
+
+router.get('/', controller.get);
+router.get('/:id', controller.getById);
+router.post('/', controller.create);
+router.put('/:id', controller.update);
+router.delete('/:id', controller.remove);
+
+export default router;

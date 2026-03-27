@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Auth middleware
 // app.use('/api/auth', auth.handler);
 app.all('/api/auth/*splat', toNodeHandler(auth));
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({ message: 'Welcome to the DentaFlow API!' });
 });
 // Health check
