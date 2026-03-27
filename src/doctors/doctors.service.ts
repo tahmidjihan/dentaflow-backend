@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma';
+import type { DoctorIdInput } from './doctors.schema';
 
 const get = () => {
   const doctors = prisma.user.findMany({
