@@ -1,5 +1,11 @@
 import express from 'express';
+import { z } from 'zod';
 import clinicService from './clinics.service';
+import {
+  createClinicSchema,
+  updateClinicSchema,
+  clinicIdSchema,
+} from './clinics.schema';
 
 const get = async (_req: express.Request, res: express.Response) => {
   try {
@@ -13,23 +19,34 @@ const get = async (_req: express.Request, res: express.Response) => {
 const getById = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const clinic = await clinicService.getById(id as string);
+    const validated = clinicIdSchema.parse({ id });
+    const clinic = await clinicService.getById(validated.id);
     if (clinic) {
       res.json(clinic);
     } else {
       res.status(404).json({ error: 'Clinic not found' });
     }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid clinic ID', details: error });
+    }
     res.status(500).json({ error: 'Failed to fetch clinic' });
   }
 };
 
 const create = async (req: express.Request, res: express.Response) => {
   try {
-    const { name, location, phone, email } = req.body;
-    const clinic = await clinicService.create({ name, location, phone, email });
+    const validated = createClinicSchema.parse(req.body);
+    const clinic = await clinicService.create(validated);
     res.status(201).json(clinic);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error });
+    }
     res.status(500).json({ error: 'Failed to create clinic' });
   }
 };
@@ -37,10 +54,19 @@ const create = async (req: express.Request, res: express.Response) => {
 const update = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
-    const clinic = await clinicService.update({ id, ...updateData });
+    const validatedParams = clinicIdSchema.parse({ id });
+    const validatedBody = updateClinicSchema.parse(req.body);
+    const clinic = await clinicService.update({
+      id: validatedParams.id,
+      ...validatedBody,
+    });
     res.json(clinic);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error });
+    }
     res.status(500).json({ error: 'Failed to update clinic' });
   }
 };
@@ -48,9 +74,15 @@ const update = async (req: express.Request, res: express.Response) => {
 const remove = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    await clinicService.remove(id as string);
+    const validated = clinicIdSchema.parse({ id });
+    await clinicService.remove(validated.id);
     res.status(204).send();
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid clinic ID', details: error });
+    }
     res.status(500).json({ error: 'Failed to delete clinic' });
   }
 };

@@ -1,11 +1,12 @@
 import { prisma } from '../lib/prisma';
+import type { CreateClinicInput, UpdateClinicInput } from './clinics.schema';
+
 const get = () => {
-  //   return { message: 'List all clinics' };
   const clinics = prisma.clinic.findMany();
   return clinics;
 };
+
 const getById = (id: string) => {
-  // return { message: 'Get clinic by ID' };
   const clinic = prisma.clinic.findUnique({
     where: {
       id: id,
@@ -13,37 +14,20 @@ const getById = (id: string) => {
   });
   return clinic;
 };
-const create = ({
-  name,
-  location,
-  phone,
-  email,
-}: {
-  name: string;
-  location: string;
-  phone: string;
-  email: string;
-}) => {
-  // return { message: 'Create a new clinic' };
+
+const create = (data: CreateClinicInput) => {
   const clinic = prisma.clinic.create({
     data: {
-      name,
-      email,
-      location,
-      phone,
+      name: data.name,
+      email: data.email,
+      location: data.location,
+      phone: data.phone,
     },
   });
   return clinic;
 };
 
-const update = (
-  data: { id: string } & Partial<{
-    name: string;
-    location: string;
-    phone: string;
-    email: string;
-  }>,
-) => {
+const update = (data: { id: string } & UpdateClinicInput) => {
   const { id, ...updateData } = data;
   const clinic = prisma.clinic.update({
     where: {
@@ -53,6 +37,7 @@ const update = (
   });
   return clinic;
 };
+
 const remove = (id: string) => {
   const clinic = prisma.clinic.delete({
     where: {
