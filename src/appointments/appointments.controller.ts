@@ -30,7 +30,7 @@ const getById = async (req: express.Request, res: express.Response) => {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
-        .json({ error: 'Invalid appointment ID', details: error.errors });
+        .json({ error: 'Invalid appointment ID', details: error });
     }
     res.status(500).json({ error: 'Failed to fetch appointment' });
   }
@@ -45,7 +45,7 @@ const create = async (req: express.Request, res: express.Response) => {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
-        .json({ error: 'Validation failed', details: error.errors });
+        .json({ error: 'Validation failed', details: error });
     }
     res.status(500).json({ error: 'Failed to create appointment' });
   }
@@ -65,7 +65,7 @@ const update = async (req: express.Request, res: express.Response) => {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
-        .json({ error: 'Validation failed', details: error.errors });
+        .json({ error: 'Validation failed', details: error });
     }
     res.status(500).json({ error: 'Failed to update appointment' });
   }
@@ -81,7 +81,7 @@ const remove = async (req: express.Request, res: express.Response) => {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
-        .json({ error: 'Invalid appointment ID', details: error.errors });
+        .json({ error: 'Invalid appointment ID', details: error });
     }
     res.status(500).json({ error: 'Failed to delete appointment' });
   }

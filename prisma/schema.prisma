@@ -117,4 +117,17 @@ model Appointment {
   doctor      User          @relation("DoctorAppointments", fields: [doctorId], references: [id])
   clinicId String
   clinic   Clinic @relation(fields: [clinicId], references: [id])
+  payment  Payment?
+}
+model Payment {
+  id                String   @id @default(cuid())
+  stripeSessionId   String   @unique
+  amount            Int      // Amount in cents (e.g., 2000 for $20)
+  currency          String   @default("usd")
+  status            String   @default("pending") // pending, paid, failed
+  createdAt         DateTime @default(now())
+
+  // Relation to Appointment
+  appointmentId     String   @unique
+  appointment       Appointment @relation(fields: [appointmentId], references: [id])
 }
