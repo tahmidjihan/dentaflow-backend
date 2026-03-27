@@ -7,6 +7,7 @@ import { auth } from './lib/auth';
 import clinicsRouter from './clinics/clinics.routes';
 import appointmentsRouter from './appointments/appointments.routes';
 import doctorsRouter from './doctors/doctors.routes';
+import usersRouter from './users/users.routes';
 dotenv.config();
 
 const app = express();
@@ -27,6 +28,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/clinics', clinicsRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/doctors', doctorsRouter);
+app.use('/api/users', usersRouter);
 
 // Auth middleware - specific path, not catch-all
 app.use('/api/auth', toNodeHandler(auth));
