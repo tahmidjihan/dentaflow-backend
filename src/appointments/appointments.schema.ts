@@ -5,7 +5,10 @@ export const createAppointmentSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
   doctorId: z.string().min(1, 'doctorId is required'),
   clinicId: z.string().min(1, 'clinicId is required'),
-  date: z.string().or(z.date()).transform((val) => new Date(val)),
+  date: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val)),
   status: z.nativeEnum(AppointStatus).optional().default(AppointStatus.BOOKED),
 });
 
@@ -13,7 +16,11 @@ export const updateAppointmentSchema = z.object({
   userId: z.string().min(1).optional(),
   doctorId: z.string().min(1).optional(),
   clinicId: z.string().min(1).optional(),
-  date: z.string().or(z.date()).transform((val) => new Date(val)).optional(),
+  date: z
+    .string()
+    .or(z.date())
+    .transform((val) => new Date(val))
+    .optional(),
   status: z.nativeEnum(AppointStatus).optional(),
 });
 

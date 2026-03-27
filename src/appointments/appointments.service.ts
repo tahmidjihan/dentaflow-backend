@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma';
-import { AppointStatus } from '../../generated/prisma';
+import { AppointStatus } from '../generated/prisma/enums';
 import type {
   CreateAppointmentInput,
   UpdateAppointmentInput,
