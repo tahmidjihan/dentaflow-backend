@@ -1,5 +1,11 @@
 import express from 'express';
+import { z } from 'zod';
 import appointmentService from './appointments.service';
+import {
+  createAppointmentSchema,
+  updateAppointmentSchema,
+  appointmentIdSchema,
+} from './appointments.schema';
 
 const get = async (_req: express.Request, res: express.Response) => {
   try {
@@ -13,29 +19,34 @@ const get = async (_req: express.Request, res: express.Response) => {
 const getById = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const appointment = await appointmentService.getById(id as string);
+    const validated = appointmentIdSchema.parse({ id });
+    const appointment = await appointmentService.getById(validated.id);
     if (appointment) {
       res.json(appointment);
     } else {
       res.status(404).json({ error: 'Appointment not found' });
     }
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid appointment ID', details: error.errors });
+    }
     res.status(500).json({ error: 'Failed to fetch appointment' });
   }
 };
 
 const create = async (req: express.Request, res: express.Response) => {
   try {
-    const { userId, doctorId, clinicId, date, status } = req.body;
-    const appointment = await appointmentService.create({
-      userId,
-      doctorId,
-      clinicId,
-      date,
-      status,
-    });
+    const validated = createAppointmentSchema.parse(req.body);
+    const appointment = await appointmentService.create(validated);
     res.status(201).json(appointment);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error.errors });
+    }
     res.status(500).json({ error: 'Failed to create appointment' });
   }
 };
@@ -43,10 +54,19 @@ const create = async (req: express.Request, res: express.Response) => {
 const update = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
-    const appointment = await appointmentService.update({ id, ...updateData });
+    const validatedParams = appointmentIdSchema.parse({ id });
+    const validatedBody = updateAppointmentSchema.parse(req.body);
+    const appointment = await appointmentService.update({
+      id: validatedParams.id,
+      ...validatedBody,
+    });
     res.json(appointment);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error.errors });
+    }
     res.status(500).json({ error: 'Failed to update appointment' });
   }
 };
@@ -54,9 +74,15 @@ const update = async (req: express.Request, res: express.Response) => {
 const remove = async (req: express.Request, res: express.Response) => {
   try {
     const { id } = req.params;
-    await appointmentService.remove(id as string);
+    const validated = appointmentIdSchema.parse({ id });
+    await appointmentService.remove(validated.id);
     res.status(204).send();
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid appointment ID', details: error.errors });
+    }
     res.status(500).json({ error: 'Failed to delete appointment' });
   }
 };

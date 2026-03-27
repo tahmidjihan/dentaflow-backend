@@ -1,12 +1,16 @@
 import { prisma } from '../lib/prisma';
+import { AppointStatus } from '../../generated/prisma';
+import type {
+  CreateAppointmentInput,
+  UpdateAppointmentInput,
+} from './appointments.schema';
 
 const get = () => {
-  //   return { message: 'List all appointments' };
   const appointments = prisma.appointment.findMany();
   return appointments;
 };
+
 const getById = (id: string) => {
-  // return { message: 'Get appointment by ID' };
   const appointment = prisma.appointment.findUnique({
     where: {
       id: id,
@@ -14,50 +18,31 @@ const getById = (id: string) => {
   });
   return appointment;
 };
-const create = ({
-  userId,
-  doctorId,
-  clinicId,
-  date,
-  status,
-}: {
-  userId: string;
-  doctorId: string;
-  clinicId: string;
-  date: Date;
-  status?: string;
-}) => {
-  // return { message: 'Create a new appointment' };
+
+const create = (data: CreateAppointmentInput) => {
   const appointment = prisma.appointment.create({
     data: {
-      userId,
-      doctorId,
-      clinicId,
-      date,
-      status: status as any,
+      userId: data.userId,
+      doctorId: data.doctorId,
+      clinicId: data.clinicId,
+      date: data.date,
+      status: data.status as AppointStatus,
     },
   });
   return appointment;
 };
 
-const update = (
-  data: { id: string } & Partial<{
-    userId: string;
-    doctorId: string;
-    clinicId: string;
-    date: Date;
-    status: string;
-  }>,
-) => {
+const update = (data: { id: string } & UpdateAppointmentInput) => {
   const { id, ...updateData } = data;
   const appointment = prisma.appointment.update({
     where: {
       id: id,
     },
-    data: updateData as any,
+    data: updateData,
   });
   return appointment;
 };
+
 const remove = (id: string) => {
   const appointment = prisma.appointment.delete({
     where: {
