@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './lib/auth';
+import clinicsRouter from './clinics/clinics.routes';
+import appointmentsRouter from './appointments/appointments.routes';
 dotenv.config();
 
 const app = express();
@@ -15,16 +17,17 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Auth middleware
-// app.use('/api/auth', auth.handler);
-app.all('/api/auth/*splat', toNodeHandler(auth));
-app.get('/', (_req, res) => {
-  res.json({ message: 'Welcome to the DentaFlow API!' });
-});
 // Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// API routes (MUST be before auth catch-all)
+app.use('/api/clinics', clinicsRouter);
+app.use('/api/appointments', appointmentsRouter);
+
+// Auth middleware - specific path, not catch-all
+app.use('/api/auth', toNodeHandler(auth));
 
 // 404 handler
 app.use((_req, res) => {

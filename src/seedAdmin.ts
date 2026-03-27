@@ -37,7 +37,7 @@ export async function seedAdmin() {
     }
 
     // Create admin user using better-auth
-    const { data, error } = await auth.api.signUpEmail({
+    const signUpResult = await auth.api.signUpEmail({
       body: {
         email: ADMIN_EMAIL,
         password: ADMIN_PASSWORD,
@@ -45,13 +45,13 @@ export async function seedAdmin() {
       },
     });
 
-    if (error) {
-      throw new Error(error.message || 'Failed to create admin user');
+    if (!signUpResult?.user?.id) {
+      throw new Error('Failed to create admin user (missing user id)');
     }
 
     // Update user role to ADMIN
     const updatedUser = await prisma.user.update({
-      where: { id: data.user.id },
+      where: { id: signUpResult.user.id },
       data: { role: 'ADMIN' },
     });
 
@@ -62,7 +62,8 @@ export async function seedAdmin() {
       role: updatedUser.role,
     });
   } catch (error) {
-    console.error('❌ Error seeding admin:', error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('❌ Error seeding admin:', message);
     throw error;
   } finally {
     await prisma.$disconnect();
