@@ -13,6 +13,7 @@ const get = async (_req: express.Request, res: express.Response) => {
     res.json(clinics);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch clinics' });
+    return;
   }
 };
 
@@ -33,6 +34,7 @@ const getById = async (req: express.Request, res: express.Response) => {
         .json({ error: 'Invalid clinic ID', details: error });
     }
     res.status(500).json({ error: 'Failed to fetch clinic' });
+    return;
   }
 };
 
@@ -48,6 +50,7 @@ const create = async (req: express.Request, res: express.Response) => {
         .json({ error: 'Validation failed', details: error });
     }
     res.status(500).json({ error: 'Failed to create clinic' });
+    return;
   }
 };
 
@@ -68,6 +71,7 @@ const update = async (req: express.Request, res: express.Response) => {
         .json({ error: 'Validation failed', details: error });
     }
     res.status(500).json({ error: 'Failed to update clinic' });
+    return;
   }
 };
 
@@ -84,6 +88,7 @@ const remove = async (req: express.Request, res: express.Response) => {
         .json({ error: 'Invalid clinic ID', details: error });
     }
     res.status(500).json({ error: 'Failed to delete clinic' });
+    return;
   }
 };
 
