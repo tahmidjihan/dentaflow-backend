@@ -325,19 +325,3 @@ curl -X POST http://localhost:3000/api/clinics \
    ```
 
 ---
-
-## 📄 License
-
-ISC
-
----
-
-## 👥 Authors
-
-- Admin: admin@dentaflow.com
-
----
-
-## 📞 Support
-
-For issues or questions, please create an issue in the repository.

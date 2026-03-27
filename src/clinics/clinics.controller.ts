@@ -24,8 +24,10 @@ const getById = async (req: express.Request, res: express.Response) => {
     const clinic = await clinicService.getById(validated.id);
     if (clinic) {
       res.json(clinic);
+      return;
     } else {
       res.status(404).json({ error: 'Clinic not found' });
+      return;
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -43,6 +45,7 @@ const create = async (req: express.Request, res: express.Response) => {
     const validated = createClinicSchema.parse(req.body);
     const clinic = await clinicService.create(validated);
     res.status(201).json(clinic);
+    return;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
@@ -64,6 +67,7 @@ const update = async (req: express.Request, res: express.Response) => {
       ...validatedBody,
     });
     res.json(clinic);
+    return;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
@@ -81,6 +85,7 @@ const remove = async (req: express.Request, res: express.Response) => {
     const validated = clinicIdSchema.parse({ id });
     await clinicService.remove(validated.id);
     res.status(204).send();
+    return;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
