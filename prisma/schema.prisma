@@ -11,3 +11,110 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  USER
+  ADMIN
+  DOCTOR
+}
+
+enum AppointStatus {
+  BOOKED
+  DONE
+  CANCELLED
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  role          Role      @default(USER)
+  clinicId      String?
+  clinic        Clinic?   @relation(fields: [clinicId], references: [id])
+  
+  appointments  Appointment[] @relation("UserAppointments")
+  doctorTasks   Appointment[] @relation("DoctorAppointments")
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Clinic {
+  id           String        @id @default(cuid())
+  name         String
+  status       String        @default("open") // open/closed
+  email        String
+  phone        String
+  location     String
+  createdAt    DateTime      @default(now())
+  doctors     User[]
+  appointments Appointment[]
+}
+
+model Appointment {
+  id        String        @id @default(cuid())
+  status    AppointStatus @default(BOOKED)
+  date      DateTime // Combined text/time into DateTime for logic
+  createdAt DateTime      @default(now())
+
+  // Relations
+  userId   String
+  user        User          @relation("UserAppointments", fields: [userId], references: [id])
+  doctorId String
+  doctor      User          @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  clinicId String
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+}
