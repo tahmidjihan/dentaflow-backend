@@ -13,15 +13,53 @@ const getById = (id: string) => {
   });
   return clinic;
 };
-const create = () => {
+const create = ({
+  name,
+  location,
+  phone,
+  email,
+}: {
+  name: string;
+  location: string;
+  phone: string;
+  email: string;
+}) => {
   // return { message: 'Create a new clinic' };
+  const clinic = prisma.clinic.create({
+    data: {
+      name,
+      email,
+      location,
+      phone,
+    },
+  });
+  return clinic;
 };
 
-const update = () => {
-  return { message: 'Update a clinic' };
+const update = (
+  data: { id: string } & Partial<{
+    name: string;
+    location: string;
+    phone: string;
+    email: string;
+  }>,
+) => {
+  const { id, ...updateData } = data;
+  const clinic = prisma.clinic.update({
+    where: {
+      id: id,
+    },
+    data: updateData,
+  });
+  return clinic;
 };
-const remove = () => {
-  return { message: 'Delete a clinic' };
+const remove = (id: string) => {
+  const clinic = prisma.clinic.delete({
+    where: {
+      id: id,
+    },
+  });
+  return clinic;
 };
 
 export default {
