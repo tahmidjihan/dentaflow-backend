@@ -52,6 +52,9 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
    DATABASE_URL="postgresql://user:password@localhost:5432/dentaflow"
    PORT=3000
    BETTER_AUTH_SECRET="your-secret-key"
+   STRIPE_SECRET_KEY="sk_test_..."
+   STRIPE_WEBHOOK_SECRET="whsec_..."
+   FRONTEND_URL="http://localhost:5173"
    ```
 
 4. **Run database migrations**
@@ -176,6 +179,39 @@ npx ts-node src/app.ts
 
 ---
 
+### Payments (Protected)
+
+| Method | Endpoint                                | Description                    | Auth Required         |
+| ------ | --------------------------------------- | ------------------------------ | --------------------- |
+| POST   | `/api/payments/create-checkout-session` | Create Stripe checkout session | ✅                    |
+| GET    | `/api/payments`                         | Get all payments               | ✅                    |
+| GET    | `/api/payments/:id`                     | Get payment by ID              | ✅                    |
+| GET    | `/api/payments/session/lookup`          | Get payment by session ID      | ✅                    |
+| POST   | `/api/payments/webhook`                 | Stripe webhook handler         | ❌ (Stripe signature) |
+
+**Create Checkout Session Request Body:**
+
+```json
+{
+  "appointmentId": "appointment-id",
+  "amount": 5000,
+  "currency": "usd"
+}
+```
+
+**Response:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_test_..."
+}
+```
+
+**Note:** Amount is in cents (e.g., 5000 = $50.00). All payment endpoints except webhook require authentication.
+
+---
+
 ### Authentication
 
 Authentication is handled by `better-auth`. All auth endpoints are available under `/api/auth`.
@@ -213,6 +249,13 @@ Password: Admin123!
 
 - id, status, date, userId, doctorId, clinicId
 - Status: BOOKED, DONE, CANCELLED
+- Relation: payment
+
+**Payment**
+
+- id, stripeSessionId, amount, currency, status, createdAt
+- Status: pending, paid, failed
+- Relation: appointment
 
 **Session & Account**
 
@@ -249,7 +292,11 @@ backend/
 │   │   ├── appointments.routes.ts
 │   │   ├── appointments.controller.ts
 │   │   └── appointments.service.ts
-│   ├── payments/              # Payment integration (planned)
+│   ├── payments/
+│   │   ├── payments.routes.ts
+│   │   ├── payments.controller.ts
+│   │   ├── payments.service.ts
+│   │   └── payments.schema.ts
 │   ├── types/                 # TypeScript type definitions
 │   ├── app.ts                 # Express app setup
 │   └── seedAdmin.ts           # Admin user seeder
