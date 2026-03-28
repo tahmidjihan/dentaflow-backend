@@ -9,6 +9,9 @@ const get = () => {
       role: true,
       image: true,
       clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
   return users;
@@ -26,6 +29,60 @@ const getById = (id: string) => {
       role: true,
       image: true,
       clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return user;
+};
+
+const update = async (data: {
+  id: string;
+  name?: string;
+  email?: string;
+  role?: 'USER' | 'ADMIN' | 'DOCTOR';
+  clinicId?: string | null;
+}) => {
+  const user = await prisma.user.update({
+    where: { id: data.id },
+    data: {
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      clinicId: data.clinicId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      image: true,
+      clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return user;
+};
+
+const remove = async (id: string) => {
+  await prisma.user.delete({
+    where: { id },
+  });
+};
+
+const assignToClinic = async (data: { userId: string; clinicId: string }) => {
+  const user = await prisma.user.update({
+    where: { id: data.userId },
+    data: { clinicId: data.clinicId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      clinicId: true,
     },
   });
   return user;
@@ -34,4 +91,7 @@ const getById = (id: string) => {
 export default {
   get,
   getById,
+  update,
+  remove,
+  assignToClinic,
 };

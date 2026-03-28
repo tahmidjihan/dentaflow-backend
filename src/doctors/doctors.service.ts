@@ -1,5 +1,4 @@
 import { prisma } from '../lib/prisma';
-// import type { DoctorIdInput } from './doctors.schema';
 
 const get = () => {
   const doctors = prisma.user.findMany({
@@ -12,6 +11,9 @@ const get = () => {
       email: true,
       image: true,
       clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
   return doctors;
@@ -29,6 +31,57 @@ const getById = (id: string) => {
       email: true,
       image: true,
       clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return doctor;
+};
+
+const update = async (data: {
+  id: string;
+  name?: string;
+  email?: string;
+  clinicId?: string | null;
+}) => {
+  const doctor = await prisma.user.update({
+    where: { id: data.id },
+    data: {
+      name: data.name,
+      email: data.email,
+      clinicId: data.clinicId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return doctor;
+};
+
+const remove = async (id: string) => {
+  await prisma.user.delete({
+    where: { id },
+  });
+};
+
+const assignToClinic = async (data: { doctorId: string; clinicId: string }) => {
+  const doctor = await prisma.user.update({
+    where: { id: data.doctorId },
+    data: { clinicId: data.clinicId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      clinicId: true,
     },
   });
   return doctor;
@@ -37,4 +90,7 @@ const getById = (id: string) => {
 export default {
   get,
   getById,
+  update,
+  remove,
+  assignToClinic,
 };

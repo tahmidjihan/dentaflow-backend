@@ -2,6 +2,13 @@ import express from 'express';
 import { z } from 'zod';
 import doctorService from './doctors.service';
 import { doctorIdSchema } from './doctors.schema';
+import { clinicIdSchema } from '../clinics/clinics.schema';
+
+const updateDoctorSchema = z.object({
+  name: z.string().optional(),
+  email: z.string().email().optional(),
+  clinicId: z.string().optional().nullable(),
+});
 
 const get = async (_req: express.Request, res: express.Response) => {
   try {
@@ -32,7 +39,66 @@ const getById = async (req: express.Request, res: express.Response) => {
   }
 };
 
+const update = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const validatedParams = doctorIdSchema.parse({ id });
+    const validatedBody = updateDoctorSchema.parse(req.body);
+    const doctor = await doctorService.update({
+      id: validatedParams.id,
+      ...validatedBody,
+    });
+    res.json(doctor);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error });
+    }
+    res.status(500).json({ error: 'Failed to update doctor' });
+  }
+};
+
+const remove = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const validated = doctorIdSchema.parse({ id });
+    await doctorService.remove(validated.id);
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid doctor ID', details: error });
+    }
+    res.status(500).json({ error: 'Failed to delete doctor' });
+  }
+};
+
+const assignToClinic = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const validatedParams = doctorIdSchema.parse({ id });
+    const validatedBody = clinicIdSchema.parse(req.body);
+    const doctor = await doctorService.assignToClinic({
+      doctorId: validatedParams.id,
+      clinicId: validatedBody.clinicId,
+    });
+    res.json(doctor);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: error });
+    }
+    res.status(500).json({ error: 'Failed to assign doctor to clinic' });
+  }
+};
+
 export default {
   get,
   getById,
+  update,
+  remove,
+  assignToClinic,
 };
