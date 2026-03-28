@@ -13,7 +13,7 @@ import Stripe from 'stripe';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors());
@@ -21,7 +21,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-export const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 // Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -33,31 +33,6 @@ app.use('/api/appointments', appointmentsRouter);
 app.use('/api/doctors', doctorsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/payments', paymentsRouter);
-
-// Webhook route needs raw body
-app.post(
-  '/api/payments/webhook',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    const sig = req.headers['stripe-signature'] as string;
-
-    try {
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET!,
-      );
-
-      const paymentService = await import('./payments/payments.service');
-      await paymentService.handleWebhookEvent(event);
-
-      res.json({ received: true });
-    } catch (error) {
-      console.error('Webhook error:', error);
-      res.status(400).json({ error: 'Webhook error' });
-    }
-  },
-);
 
 // Auth middleware - specific path, not catch-all
 app.use('/api/auth', toNodeHandler(auth));

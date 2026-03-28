@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AppointStatus } from '../../generated/prisma';
+import { AppointStatus } from '../generated/prisma/enums';
 
 export const createAppointmentSchema = z.object({
   userId: z.string().min(1, 'userId is required'),
