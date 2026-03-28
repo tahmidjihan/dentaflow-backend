@@ -10,7 +10,8 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
 - **ORM:** Prisma
 - **Database:** PostgreSQL
 - **Authentication:** better-auth
-- **Payment:** Stripe (planned)
+- **Payment:** Stripe (Checkout Sessions)
+- **Validation:** Zod
 
 ## 📋 Features
 
@@ -20,6 +21,7 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
 - ✅ Appointment management (Protected routes)
 - ✅ Role-based access control (USER, ADMIN, DOCTOR)
 - ✅ Secure authentication with better-auth
+- ✅ Stripe payment integration (Checkout Sessions)
 
 ## 🛠️ Installation
 
@@ -50,11 +52,12 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
 
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/dentaflow"
-   PORT=3000
+   PORT=8000
    BETTER_AUTH_SECRET="your-secret-key"
+   BETTER_AUTH_URL="http://localhost:8000"
+   FRONTEND_URL="http://localhost:3000"
    STRIPE_SECRET_KEY="sk_test_..."
-   STRIPE_WEBHOOK_SECRET="whsec_..."
-   FRONTEND_URL="http://localhost:5173"
+   STRIPE_PRICE_ID="price_..."
    ```
 
 4. **Run database migrations**
@@ -77,7 +80,7 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
 npm run dev
 ```
 
-The server will start on `http://localhost:3000` with auto-reload enabled.
+The server will start on `http://localhost:8000` with auto-reload enabled.
 
 ### Production Mode
 
@@ -179,23 +182,21 @@ npx ts-node src/app.ts
 
 ---
 
-### Payments (Protected)
+### Payments
 
-| Method | Endpoint                                | Description                    | Auth Required         |
-| ------ | --------------------------------------- | ------------------------------ | --------------------- |
-| POST   | `/api/payments/create-checkout-session` | Create Stripe checkout session | ✅                    |
-| GET    | `/api/payments`                         | Get all payments               | ✅                    |
-| GET    | `/api/payments/:id`                     | Get payment by ID              | ✅                    |
-| GET    | `/api/payments/session/lookup`          | Get payment by session ID      | ✅                    |
-| POST   | `/api/payments/webhook`                 | Stripe webhook handler         | ❌ (Stripe signature) |
+| Method | Endpoint                       | Description                    | Auth Required |
+| ------ | ------------------------------ | ------------------------------ | ------------- |
+| GET    | `/api/payments`                | Payments API health check      | ❌            |
+| POST   | `/api/payments/create-payment` | Create Stripe checkout session | ❌            |
 
-**Create Checkout Session Request Body:**
+**Create Payment Request Body:**
 
 ```json
 {
   "appointmentId": "appointment-id",
-  "amount": 5000,
-  "currency": "usd"
+  "user": "user-id",
+  "doctor": "doctor-id",
+  "amount": 2000
 }
 ```
 
@@ -203,12 +204,16 @@ npx ts-node src/app.ts
 
 ```json
 {
-  "url": "https://checkout.stripe.com/...",
-  "sessionId": "cs_test_..."
+  "url": "https://checkout.stripe.com/c/pay/cs_test_..."
 }
 ```
 
-**Note:** Amount is in cents (e.g., 5000 = $50.00). All payment endpoints except webhook require authentication.
+**Note:**
+
+- Amount is in cents (e.g., 2000 = $20.00)
+- The `appointmentId` must exist in the database (foreign key constraint)
+- Redirect the user to the returned URL to complete payment
+- Payment record is automatically created in the database upon session creation
 
 ---
 
@@ -317,7 +322,7 @@ The application uses `better-auth` for session-based authentication.
 To access protected routes (e.g., appointments), include the session token:
 
 ```bash
-curl -H "Authorization: Bearer <session-token>" http://localhost:3000/api/appointments
+curl -H "Authorization: Bearer <session-token>" http://localhost:8000/api/appointments
 ```
 
 ### Auth Middleware
@@ -332,21 +337,26 @@ Example requests:
 
 ```bash
 # Health check
-curl http://localhost:3000/health
+curl http://localhost:8000/health
 
 # Get all clinics
-curl http://localhost:3000/api/clinics
+curl http://localhost:8000/api/clinics
 
 # Get all doctors
-curl http://localhost:3000/api/doctors
+curl http://localhost:8000/api/doctors
 
 # Get all users
-curl http://localhost:3000/api/users
+curl http://localhost:8000/api/users
 
 # Create a clinic
-curl -X POST http://localhost:3000/api/clinics \
+curl -X POST http://localhost:8000/api/clinics \
   -H "Content-Type: application/json" \
   -d '{"name":"Test Clinic","email":"test@clinic.com","phone":"123456","location":"Test Location"}'
+
+# Create a payment (appointment must exist)
+curl -X POST http://localhost:8000/api/payments/create-payment \
+  -H "Content-Type: application/json" \
+  -d '{"appointmentId":"cmna0ubku00015li549faqj68","user":"user-id","doctor":"doctor-id","amount":2000}'
 ```
 
 ---

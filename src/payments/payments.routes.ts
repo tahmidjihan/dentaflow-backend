@@ -15,31 +15,36 @@ router.post('/create-payment', async (req, res) => {
       .status(400)
       .json({ error: 'Invalid payment data', details: body.error });
   }
-  const session = await stripe.checkout.sessions.create({
-    line_items: [
-      {
-        // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-        price: process.env.STRIPE_PRICE_ID as string,
-        quantity: 1,
-      },
-    ],
-    mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}?success=true`,
-  });
-  // console.log(session);
-  if (session.url) {
-    // return res.json({ url: session.url });
-    await prisma.payment.create({
-      data: {
-        appointmentId: body.data.appointmentId,
-        amount: body.data.amount,
-        stripeSessionId: session.id,
-      },
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: process.env.STRIPE_PRICE_ID,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}?success=true`,
+      cancel_url: `${process.env.FRONTEND_URL}?canceled=true`,
     });
-    return res.json({ url: session.url });
+    if (session.url) {
+      await prisma.payment.create({
+        data: {
+          appointmentId: body.data.appointmentId,
+          amount: body.data.amount,
+          stripeSessionId: session.id,
+        },
+      });
+      return res.json({ url: session.url });
+    }
+    return res.status(500).json({ error: 'Failed to create payment session' });
+  } catch (error) {
+    console.error('Payment error:', error);
+    return res.status(500).json({
+      error: 'Payment failed',
+      details: error instanceof Error ? error.message : error,
+    });
   }
-  return res.status(500).json({ error: 'Failed to create payment session' });
-  // res.redirect(303, session.url);
 });
 
 export default router;
