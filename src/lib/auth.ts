@@ -10,6 +10,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  trustedOrigins: [process.env.ORIGIN_URL || 'http://localhost:3000'],
   user: {
     additionalFields: {
       role: {
