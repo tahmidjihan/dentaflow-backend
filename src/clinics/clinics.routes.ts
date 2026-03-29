@@ -1,7 +1,7 @@
 import express from 'express';
 import controller from './clinics.controller';
 import { requireAuth, requireRole } from '../lib/authMiddleware';
-import { Role } from '../generated/prisma';
+import { Role } from '../generated/prisma/enums';
 
 const router = express.Router();
 

@@ -43,17 +43,17 @@ app.use((_req, res) => {
 });
 
 // Error handler
-app.use(
-  (
-    err: Error,
-    _req: express.Request,
-    res: express.Response,
-    _next: express.NextFunction,
-  ) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Internal server error' });
-  },
-);
+// app.use(
+//   (
+//     err: Error,
+//     _req: express.Request,
+//     res: express.Response,
+//     _next: express.NextFunction,
+//   ) => {
+//     console.error(err.stack);
+//     res.status(500).json({ error: 'Internal server error' });
+//   },
+// );
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

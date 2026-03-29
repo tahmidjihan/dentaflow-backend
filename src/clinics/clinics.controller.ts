@@ -1,4 +1,4 @@
-import express from 'express';
+import { RequestHandler } from 'express';
 import { z } from 'zod';
 import clinicService from './clinics.service';
 import {
@@ -7,7 +7,7 @@ import {
   clinicIdSchema,
 } from './clinics.schema';
 
-const get = async (_req: express.Request, res: express.Response) => {
+const get: RequestHandler = async (_req, res) => {
   try {
     const clinics = await clinicService.get();
     res.json(clinics);
@@ -17,7 +17,7 @@ const get = async (_req: express.Request, res: express.Response) => {
   }
 };
 
-const getById = async (req: express.Request, res: express.Response) => {
+const getById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = clinicIdSchema.parse({ id });
@@ -40,7 +40,7 @@ const getById = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const create = async (req: express.Request, res: express.Response) => {
+const create: RequestHandler = async (req, res) => {
   try {
     const validated = createClinicSchema.parse(req.body);
     const clinic = await clinicService.create(validated);
@@ -57,7 +57,7 @@ const create = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const update = async (req: express.Request, res: express.Response) => {
+const update: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedParams = clinicIdSchema.parse({ id });
@@ -79,7 +79,7 @@ const update = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const remove = async (req: express.Request, res: express.Response) => {
+const remove: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = clinicIdSchema.parse({ id });

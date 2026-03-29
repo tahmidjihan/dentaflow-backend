@@ -1,9 +1,21 @@
-import type { User } from '@prisma/client';
+import { Role } from '../generated/prisma';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user: {
+        id: string;
+        email: string;
+        name: string;
+        role: Role;
+        emailVerified: boolean;
+        image?: string | null;
+      };
+      session: {
+        id: string;
+        userId: string;
+        expiresAt: Date;
+      };
     }
   }
 }

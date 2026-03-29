@@ -1,4 +1,4 @@
-import express from 'express';
+import { RequestHandler } from 'express';
 import { z } from 'zod';
 import userService from './users.service';
 import { clinicIdSchema } from '../clinics/clinics.schema';
@@ -14,7 +14,7 @@ const updateUserSchema = z.object({
   clinicId: z.string().optional().nullable(),
 });
 
-const get = async (_req: express.Request, res: express.Response) => {
+const get: RequestHandler = async (_req, res) => {
   try {
     const users = await userService.get();
     res.json(users);
@@ -23,27 +23,25 @@ const get = async (_req: express.Request, res: express.Response) => {
   }
 };
 
-const getById = async (req: express.Request, res: express.Response) => {
+const getById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = userIdSchema.parse({ id });
     const user = await userService.getById(validated.id);
     if (user) {
-      res.json(user);
+      return res.json(user);
     } else {
-      res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res
-        .status(400)
-        .json({ error: 'Invalid user ID', details: error });
+      return res.status(400).json({ error: 'Invalid user ID', details: error });
     }
-    res.status(500).json({ error: 'Failed to fetch user' });
+    return res.status(500).json({ error: 'Failed to fetch user' });
   }
 };
 
-const update = async (req: express.Request, res: express.Response) => {
+const update: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedParams = userIdSchema.parse({ id });
@@ -52,50 +50,48 @@ const update = async (req: express.Request, res: express.Response) => {
       id: validatedParams.id,
       ...validatedBody,
     });
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
         .json({ error: 'Validation failed', details: error });
     }
-    res.status(500).json({ error: 'Failed to update user' });
+    return res.status(500).json({ error: 'Failed to update user' });
   }
 };
 
-const remove = async (req: express.Request, res: express.Response) => {
+const remove: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = userIdSchema.parse({ id });
     await userService.remove(validated.id);
-    res.status(204).send();
+    return res.status(204).send();
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res
-        .status(400)
-        .json({ error: 'Invalid user ID', details: error });
+      return res.status(400).json({ error: 'Invalid user ID', details: error });
     }
-    res.status(500).json({ error: 'Failed to delete user' });
+    return res.status(500).json({ error: 'Failed to delete user' });
   }
 };
 
-const assignToClinic = async (req: express.Request, res: express.Response) => {
+const assignToClinic: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedParams = userIdSchema.parse({ id });
     const validatedBody = clinicIdSchema.parse(req.body);
     const user = await userService.assignToClinic({
       userId: validatedParams.id,
-      clinicId: validatedBody.clinicId,
+      clinicId: validatedBody.id,
     });
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res
         .status(400)
         .json({ error: 'Validation failed', details: error });
     }
-    res.status(500).json({ error: 'Failed to assign user to clinic' });
+    return res.status(500).json({ error: 'Failed to assign user to clinic' });
   }
 };
 

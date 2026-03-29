@@ -1,4 +1,4 @@
-import express from 'express';
+import { RequestHandler } from 'express';
 import { z } from 'zod';
 import appointmentService from './appointments.service';
 import {
@@ -7,7 +7,7 @@ import {
   appointmentIdSchema,
 } from './appointments.schema';
 
-const get = async (_req: express.Request, res: express.Response) => {
+const get: RequestHandler = async (_req, res) => {
   try {
     const appointments = await appointmentService.get();
     return res.json(appointments);
@@ -16,7 +16,7 @@ const get = async (_req: express.Request, res: express.Response) => {
   }
 };
 
-const getById = async (req: express.Request, res: express.Response) => {
+const getById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = appointmentIdSchema.parse({ id });
@@ -36,7 +36,7 @@ const getById = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const create = async (req: express.Request, res: express.Response) => {
+const create: RequestHandler = async (req, res) => {
   try {
     const validated = createAppointmentSchema.parse(req.body);
     const appointment = await appointmentService.create(validated);
@@ -51,7 +51,7 @@ const create = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const update = async (req: express.Request, res: express.Response) => {
+const update: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedParams = appointmentIdSchema.parse({ id });
@@ -71,7 +71,7 @@ const update = async (req: express.Request, res: express.Response) => {
   }
 };
 
-const remove = async (req: express.Request, res: express.Response) => {
+const remove: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validated = appointmentIdSchema.parse({ id });
