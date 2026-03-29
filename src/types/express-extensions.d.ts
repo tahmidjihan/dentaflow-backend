@@ -1,9 +1,9 @@
-import { Role } from '../generated/prisma';
+import type { Role } from '../generated/prisma/enums';
 
 declare global {
   namespace Express {
     interface Request {
-      user: {
+      user?: {
         id: string;
         email: string;
         name: string;
@@ -11,7 +11,7 @@ declare global {
         emailVerified: boolean;
         image?: string | null;
       };
-      session: {
+      session?: {
         id: string;
         userId: string;
         expiresAt: Date;

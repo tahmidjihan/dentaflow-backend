@@ -10,3 +10,4 @@ node_modules
 /prisma/migrations
 /dist
 cookies.txt
+.vercel
