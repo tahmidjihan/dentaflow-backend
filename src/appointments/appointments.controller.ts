@@ -119,7 +119,9 @@ const updateStatus: RequestHandler = async (req, res) => {
 const getMyAppointments: RequestHandler = async (req, res) => {
   try {
     // Get current user from session
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({
+      headers: new Headers(req.headers as any),
+    });
     if (!session?.user?.email) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -144,7 +146,9 @@ const getDoctorAppointments: RequestHandler = async (req, res) => {
     const { id } = req.params;
 
     // Get current user from session
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({
+      headers: new Headers(req.headers as any),
+    });
     if (!session?.user?.email) {
       return res.status(401).json({ error: 'Unauthorized' });
     }

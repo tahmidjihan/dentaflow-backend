@@ -1,14 +1,15 @@
 import { stripe } from '../app';
 import express from 'express';
+import type { Request, Response } from 'express';
 import { createPaymentSchema } from './payments.schema';
 import { prisma } from '../lib/prisma';
 
 const router = express.Router();
 
-router.get('/', (_req, res) => {
+router.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Payments API is working!' });
 });
-router.post('/create-payment', async (req, res) => {
+router.post('/create-payment', async (req: Request, res: Response) => {
   const body = createPaymentSchema.safeParse(req.body);
   if (!body.success) {
     return res

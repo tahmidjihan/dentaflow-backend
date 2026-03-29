@@ -99,7 +99,9 @@ const assignToClinic: RequestHandler = async (req, res) => {
 const getCurrentUser: RequestHandler = async (req, res) => {
   try {
     // Get user email from better-auth session
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({
+      headers: new Headers(req.headers as any),
+    });
     if (!session?.user?.email) {
       return res.status(401).json({ error: 'Unauthorized' });
     }

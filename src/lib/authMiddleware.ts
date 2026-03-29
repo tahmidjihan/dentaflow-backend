@@ -4,7 +4,9 @@ import { Role } from '../generated/prisma/enums';
 import { prisma } from './prisma';
 
 export const requireAuth: RequestHandler = async (req, res, next) => {
-  const session = await auth.api.getSession({ headers: req.headers });
+  const session = await auth.api.getSession({
+    headers: new Headers(req.headers as any),
+  });
 
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });

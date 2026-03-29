@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 // Health check
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -66,7 +66,7 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 // app.use('/api/auth', toNodeHandler(auth));
 
 // 404 handler
-app.use((_req, res) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Not found' });
 });
 
