@@ -1,7 +1,7 @@
-import { auth } from './auth';
+import { auth } from './auth.js';
 import { RequestHandler } from 'express';
-import { Role } from '../generated/prisma/enums';
-import { prisma } from './prisma';
+import { Role } from '../generated/prisma/enums.js';
+import { prisma } from './prisma.js';
 import express from 'express';
 export const requireAuth: RequestHandler = async (
   req: express.Request,

@@ -1,8 +1,8 @@
-import { stripe } from '../app';
+import { stripe } from '../app.js';
 import express from 'express';
 import type { Request, Response } from 'express';
-import { createPaymentSchema } from './payments.schema';
-import { prisma } from '../lib/prisma';
+import { createPaymentSchema } from './payments.schema.js';
+import { prisma } from '../lib/prisma.js';
 
 const router = express.Router();
 

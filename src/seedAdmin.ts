@@ -1,5 +1,5 @@
-import { prisma } from './lib/prisma';
-import { auth } from './lib/auth';
+import { prisma } from './lib/prisma.js';
+import { auth } from './lib/auth.js';
 
 const ADMIN_EMAIL = 'admin@dentaflow.com';
 const ADMIN_PASSWORD = 'Admin123!';

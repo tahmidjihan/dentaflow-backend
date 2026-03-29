@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { z } from 'zod';
-import clinicService from './clinics.service';
+import clinicService from './clinics.service.js';
 import {
   createClinicSchema,
   updateClinicSchema,
   clinicIdSchema,
-} from './clinics.schema';
+} from './clinics.schema.js';
 import express from 'express';
 const get: RequestHandler = async (
   _req: express.Request,

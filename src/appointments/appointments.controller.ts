@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { z } from 'zod';
-import appointmentService from './appointments.service';
+import appointmentService from './appointments.service.js';
 import {
   createAppointmentSchema,
   updateAppointmentSchema,
   appointmentIdSchema,
-} from './appointments.schema';
-import { AppointStatus } from '../generated/prisma/enums';
-import { auth } from '../lib/auth';
-import userService from '../users/users.service';
+} from './appointments.schema.js';
+import { AppointStatus } from '../generated/prisma/enums.js';
+import { auth } from '../lib/auth.js';
+import userService from '../users/users.service.js';
 import express from 'express';
 
 const get: RequestHandler = async (

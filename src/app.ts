@@ -3,12 +3,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from './lib/auth';
-import clinicsRouter from './clinics/clinics.routes';
-import appointmentsRouter from './appointments/appointments.routes';
-import doctorsRouter from './doctors/doctors.routes';
-import usersRouter from './users/users.routes';
-import paymentsRouter from './payments/payments.routes';
+import { auth } from './lib/auth.js';
+import clinicsRouter from './clinics/clinics.routes.js';
+import appointmentsRouter from './appointments/appointments.routes.js';
+import doctorsRouter from './doctors/doctors.routes.js';
+import usersRouter from './users/users.routes.js';
+import paymentsRouter from './payments/payments.routes.js';
 import Stripe from 'stripe';
 dotenv.config();
 
@@ -83,8 +83,16 @@ app.use((_req: Request, res: Response) => {
 //   },
 // );
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// In serverless environments (e.g. Vercel/AWS Lambda), the platform manages the HTTP server.
+const isServerless =
+  process.env.VERCEL === '1' ||
+  Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
+  Boolean(process.env.LAMBDA_TASK_ROOT);
+
+if (!isServerless) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
 
 export default app;

@@ -1,6 +1,6 @@
 import express from 'express';
-import controller from './appointments.controller';
-import { requireAuth } from '../lib/authMiddleware';
+import controller from './appointments.controller.js';
+import { requireAuth } from '../lib/authMiddleware.js';
 // import { Role } from '../generated/prisma/enums';
 
 const router = express.Router();

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { z } from 'zod';
-import doctorService from './doctors.service';
-import { doctorIdSchema } from './doctors.schema';
-import { clinicIdSchema } from '../clinics/clinics.schema';
+import doctorService from './doctors.service.js';
+import { doctorIdSchema } from './doctors.schema.js';
+import { clinicIdSchema } from '../clinics/clinics.schema.js';
 import express from 'express';
 
 const updateDoctorSchema = z.object({

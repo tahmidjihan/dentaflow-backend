@@ -1,5 +1,5 @@
-import { prisma } from '../lib/prisma';
-import type { CreateClinicInput, UpdateClinicInput } from './clinics.schema';
+import { prisma } from '../lib/prisma.js';
+import type { CreateClinicInput, UpdateClinicInput } from './clinics.schema.js';
 
 const get = () => {
   const clinics = prisma.clinic.findMany();

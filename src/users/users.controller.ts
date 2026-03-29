@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { z } from 'zod';
-import userService from './users.service';
-import { clinicIdSchema } from '../clinics/clinics.schema';
-import { auth } from '../lib/auth';
+import userService from './users.service.js';
+import { clinicIdSchema } from '../clinics/clinics.schema.js';
+import { auth } from '../lib/auth.js';
 import express from 'express';
 
 const userIdSchema = z.object({

@@ -1,9 +1,9 @@
-import { prisma } from '../lib/prisma';
-import { AppointStatus } from '../generated/prisma/enums';
+import { prisma } from '../lib/prisma.js';
+import { AppointStatus } from '../generated/prisma/enums.js';
 import type {
   CreateAppointmentInput,
   UpdateAppointmentInput,
-} from './appointments.schema';
+} from './appointments.schema.js';
 
 const get = async () => {
   const appointments = await prisma.appointment.findMany({
