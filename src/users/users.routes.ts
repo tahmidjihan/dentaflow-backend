@@ -9,6 +9,9 @@ const router = express.Router();
 router.get('/', controller.get);
 router.get('/:id', controller.getById);
 
+// Protected routes - Get current user
+router.get('/me', requireAuth, controller.getCurrentUser);
+
 // Protected routes - Admin only
 router.put('/:id', requireAuth, requireRole(Role.ADMIN), controller.update);
 router.delete('/:id', requireAuth, requireRole(Role.ADMIN), controller.remove);

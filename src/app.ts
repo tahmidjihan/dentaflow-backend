@@ -61,8 +61,9 @@ app.use('/api/doctors', doctorsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/payments', paymentsRouter);
 
-// Auth middleware - specific path, not catch-all
-app.use('/api/auth', toNodeHandler(auth));
+// Auth middleware - use wildcard pattern for Express v5 compatibility
+app.all('/api/auth/*splat', toNodeHandler(auth));
+// app.use('/api/auth', toNodeHandler(auth));
 
 // 404 handler
 app.use((_req, res) => {

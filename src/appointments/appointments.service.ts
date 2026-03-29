@@ -5,22 +5,139 @@ import type {
   UpdateAppointmentInput,
 } from './appointments.schema';
 
-const get = () => {
-  const appointments = prisma.appointment.findMany();
+const get = async () => {
+  const appointments = await prisma.appointment.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
+  });
   return appointments;
 };
 
-const getById = (id: string) => {
-  const appointment = prisma.appointment.findUnique({
+const getById = async (id: string) => {
+  const appointment = await prisma.appointment.findUnique({
     where: {
       id: id,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
     },
   });
   return appointment;
 };
 
-const create = (data: CreateAppointmentInput) => {
-  const appointment = prisma.appointment.create({
+const getByUserId = async (userId: string) => {
+  const appointments = await prisma.appointment.findMany({
+    where: { userId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
+    orderBy: { date: 'desc' },
+  });
+  return appointments;
+};
+
+const getByDoctorId = async (doctorId: string) => {
+  const appointments = await prisma.appointment.findMany({
+    where: { doctorId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
+    orderBy: { date: 'desc' },
+  });
+  return appointments;
+};
+
+const create = async (data: CreateAppointmentInput) => {
+  const appointment = await prisma.appointment.create({
     data: {
       userId: data.userId,
       doctorId: data.doctorId,
@@ -28,23 +145,106 @@ const create = (data: CreateAppointmentInput) => {
       date: data.date,
       status: data.status as AppointStatus,
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
   });
   return appointment;
 };
 
-const update = (data: { id: string } & UpdateAppointmentInput) => {
+const update = async (data: { id: string } & UpdateAppointmentInput) => {
   const { id, ...updateData } = data;
-  const appointment = prisma.appointment.update({
+  const appointment = await prisma.appointment.update({
     where: {
       id: id,
     },
     data: updateData,
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
   });
   return appointment;
 };
 
-const remove = (id: string) => {
-  const appointment = prisma.appointment.delete({
+const updateStatus = async (id: string, status: AppointStatus) => {
+  const appointment = await prisma.appointment.update({
+    where: { id },
+    data: { status },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      doctor: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      clinic: {
+        select: {
+          id: true,
+          name: true,
+          location: true,
+        },
+      },
+    },
+  });
+  return appointment;
+};
+
+const remove = async (id: string) => {
+  const appointment = await prisma.appointment.delete({
     where: {
       id: id,
     },
@@ -55,7 +255,10 @@ const remove = (id: string) => {
 export default {
   get,
   getById,
+  getByUserId,
+  getByDoctorId,
   create,
   update,
+  updateStatus,
   remove,
 };

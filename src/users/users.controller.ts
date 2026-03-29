@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { z } from 'zod';
 import userService from './users.service';
 import { clinicIdSchema } from '../clinics/clinics.schema';
+import { auth } from '../lib/auth';
 
 const userIdSchema = z.object({
   id: z.string(),
@@ -95,10 +96,29 @@ const assignToClinic: RequestHandler = async (req, res) => {
   }
 };
 
+const getCurrentUser: RequestHandler = async (req, res) => {
+  try {
+    // Get user email from better-auth session
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session?.user?.email) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const user = await userService.getByEmail(session.user.email);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.json(user);
+  } catch (error) {
+    console.error('Get current user error:', error);
+    return res.status(500).json({ error: 'Failed to fetch current user' });
+  }
+};
+
 export default {
   get,
   getById,
   update,
   remove,
   assignToClinic,
+  getCurrentUser,
 };

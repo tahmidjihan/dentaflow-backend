@@ -88,10 +88,29 @@ const assignToClinic = async (data: { userId: string; clinicId: string }) => {
   return user;
 };
 
+const getByEmail = (email: string) => {
+  const user = prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      image: true,
+      clinicId: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  return user;
+};
+
 export default {
   get,
   getById,
   update,
   remove,
   assignToClinic,
+  getByEmail,
 };

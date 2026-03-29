@@ -6,12 +6,16 @@ import {
   updateAppointmentSchema,
   appointmentIdSchema,
 } from './appointments.schema';
+import { AppointStatus } from '../generated/prisma/enums';
+import { auth } from '../lib/auth';
+import userService from '../users/users.service';
 
 const get: RequestHandler = async (_req, res) => {
   try {
     const appointments = await appointmentService.get();
     return res.json(appointments);
   } catch (error) {
+    console.error('Get appointments error:', error);
     return res.status(500).json({ error: 'Failed to fetch appointments' });
   }
 };
@@ -32,14 +36,20 @@ const getById: RequestHandler = async (req, res) => {
         .status(400)
         .json({ error: 'Invalid appointment ID', details: error });
     }
+    console.error('Get appointment by id error:', error);
     return res.status(500).json({ error: 'Failed to fetch appointment' });
   }
 };
 
 const create: RequestHandler = async (req, res) => {
   try {
-    const validated = createAppointmentSchema.parse(req.body);
-    const appointment = await appointmentService.create(validated);
+    const validated = createAppointmentSchema.safeParse(req.body);
+    if (!validated.success) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: validated.error });
+    }
+    const appointment = await appointmentService.create(validated.data);
     return res.status(201).json(appointment);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -47,6 +57,7 @@ const create: RequestHandler = async (req, res) => {
         .status(400)
         .json({ error: 'Validation failed', details: error });
     }
+    console.error('Create appointment error:', error);
     return res.status(500).json({ error: 'Failed to create appointment' });
   }
 };
@@ -55,10 +66,15 @@ const update: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const validatedParams = appointmentIdSchema.parse({ id });
-    const validatedBody = updateAppointmentSchema.parse(req.body);
+    const validatedBody = updateAppointmentSchema.safeParse(req.body);
+    if (!validatedBody.success) {
+      return res
+        .status(400)
+        .json({ error: 'Validation failed', details: validatedBody.error });
+    }
     const appointment = await appointmentService.update({
       id: validatedParams.id,
-      ...validatedBody,
+      ...validatedBody.data,
     });
     return res.json(appointment);
   } catch (error) {
@@ -67,7 +83,98 @@ const update: RequestHandler = async (req, res) => {
         .status(400)
         .json({ error: 'Validation failed', details: error });
     }
+    console.error('Update appointment error:', error);
     return res.status(500).json({ error: 'Failed to update appointment' });
+  }
+};
+
+const updateStatus: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !Object.values(AppointStatus).includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const validatedParams = appointmentIdSchema.parse({ id });
+    const appointment = await appointmentService.updateStatus(
+      validatedParams.id,
+      status,
+    );
+    return res.json(appointment);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid appointment ID', details: error });
+    }
+    console.error('Update appointment status error:', error);
+    return res
+      .status(500)
+      .json({ error: 'Failed to update appointment status' });
+  }
+};
+
+const getMyAppointments: RequestHandler = async (req, res) => {
+  try {
+    // Get current user from session
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session?.user?.email) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Get user by email
+    const user = await userService.getByEmail(session.user.email);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get appointments for this user
+    const appointments = await appointmentService.getByUserId(user.id);
+    return res.json(appointments);
+  } catch (error) {
+    console.error('Get my appointments error:', error);
+    return res.status(500).json({ error: 'Failed to fetch appointments' });
+  }
+};
+
+const getDoctorAppointments: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get current user from session
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session?.user?.email) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Get current user to check role
+    const currentUser = await userService.getByEmail(session.user.email);
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Only allow doctors to view their own appointments or admins to view all
+    if (currentUser.role !== 'ADMIN' && currentUser.id !== id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const validatedParams = appointmentIdSchema.parse({ id });
+    const appointments = await appointmentService.getByDoctorId(
+      validatedParams.id,
+    );
+    return res.json(appointments);
+  } catch (error) {
+    console.error('Get doctor appointments error:', error);
+    if (error instanceof z.ZodError) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid doctor ID', details: error });
+    }
+    return res
+      .status(500)
+      .json({ error: 'Failed to fetch doctor appointments' });
   }
 };
 
@@ -83,6 +190,7 @@ const remove: RequestHandler = async (req, res) => {
         .status(400)
         .json({ error: 'Invalid appointment ID', details: error });
     }
+    console.error('Delete appointment error:', error);
     return res.status(500).json({ error: 'Failed to delete appointment' });
   }
 };
@@ -92,5 +200,8 @@ export default {
   getById,
   create,
   update,
+  updateStatus,
+  getMyAppointments,
+  getDoctorAppointments,
   remove,
 };
