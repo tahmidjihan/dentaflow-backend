@@ -2,8 +2,12 @@ import { auth } from './auth';
 import { RequestHandler } from 'express';
 import { Role } from '../generated/prisma/enums';
 import { prisma } from './prisma';
-
-export const requireAuth: RequestHandler = async (req, res, next) => {
+import express from 'express';
+export const requireAuth: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
   const session = await auth.api.getSession({
     headers: new Headers(req.headers as any),
   });
@@ -34,7 +38,7 @@ export const requireAuth: RequestHandler = async (req, res, next) => {
 };
 
 export const requireRole = (...roles: Role[]): RequestHandler => {
-  return async (req, res, next) => {
+  return async (req: express.Request, res: express.Response, next) => {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }

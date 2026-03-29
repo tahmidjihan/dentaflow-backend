@@ -3,6 +3,7 @@ import { z } from 'zod';
 import userService from './users.service';
 import { clinicIdSchema } from '../clinics/clinics.schema';
 import { auth } from '../lib/auth';
+import express from 'express';
 
 const userIdSchema = z.object({
   id: z.string(),
@@ -15,7 +16,10 @@ const updateUserSchema = z.object({
   clinicId: z.string().optional().nullable(),
 });
 
-const get: RequestHandler = async (_req, res) => {
+const get: RequestHandler = async (
+  _req: express.Request,
+  res: express.Response,
+) => {
   try {
     const users = await userService.get();
     res.json(users);
@@ -24,7 +28,10 @@ const get: RequestHandler = async (_req, res) => {
   }
 };
 
-const getById: RequestHandler = async (req, res) => {
+const getById: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = userIdSchema.parse({ id });
@@ -42,7 +49,10 @@ const getById: RequestHandler = async (req, res) => {
   }
 };
 
-const update: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = userIdSchema.parse({ id });
@@ -62,7 +72,10 @@ const update: RequestHandler = async (req, res) => {
   }
 };
 
-const remove: RequestHandler = async (req, res) => {
+const remove: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = userIdSchema.parse({ id });
@@ -76,7 +89,10 @@ const remove: RequestHandler = async (req, res) => {
   }
 };
 
-const assignToClinic: RequestHandler = async (req, res) => {
+const assignToClinic: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = userIdSchema.parse({ id });
@@ -96,7 +112,10 @@ const assignToClinic: RequestHandler = async (req, res) => {
   }
 };
 
-const getCurrentUser: RequestHandler = async (req, res) => {
+const getCurrentUser: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     // Get user email from better-auth session
     const session = await auth.api.getSession({

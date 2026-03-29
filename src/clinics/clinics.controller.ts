@@ -6,8 +6,11 @@ import {
   updateClinicSchema,
   clinicIdSchema,
 } from './clinics.schema';
-
-const get: RequestHandler = async (_req, res) => {
+import express from 'express';
+const get: RequestHandler = async (
+  _req: express.Request,
+  res: express.Response,
+) => {
   try {
     const clinics = await clinicService.get();
     res.json(clinics);
@@ -17,7 +20,10 @@ const get: RequestHandler = async (_req, res) => {
   }
 };
 
-const getById: RequestHandler = async (req, res) => {
+const getById: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = clinicIdSchema.parse({ id });
@@ -40,7 +46,10 @@ const getById: RequestHandler = async (req, res) => {
   }
 };
 
-const create: RequestHandler = async (req, res) => {
+const create: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const validated = createClinicSchema.parse(req.body);
     const clinic = await clinicService.create(validated);
@@ -57,7 +66,10 @@ const create: RequestHandler = async (req, res) => {
   }
 };
 
-const update: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = clinicIdSchema.parse({ id });
@@ -79,7 +91,10 @@ const update: RequestHandler = async (req, res) => {
   }
 };
 
-const remove: RequestHandler = async (req, res) => {
+const remove: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = clinicIdSchema.parse({ id });

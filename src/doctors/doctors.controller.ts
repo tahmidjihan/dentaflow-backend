@@ -3,6 +3,7 @@ import { z } from 'zod';
 import doctorService from './doctors.service';
 import { doctorIdSchema } from './doctors.schema';
 import { clinicIdSchema } from '../clinics/clinics.schema';
+import express from 'express';
 
 const updateDoctorSchema = z.object({
   name: z.string().optional(),
@@ -10,7 +11,10 @@ const updateDoctorSchema = z.object({
   clinicId: z.string().optional().nullable(),
 });
 
-const get: RequestHandler = async (_req, res) => {
+const get: RequestHandler = async (
+  _req: express.Request,
+  res: express.Response,
+) => {
   try {
     const doctors = await doctorService.get();
     res.json(doctors);
@@ -19,7 +23,10 @@ const get: RequestHandler = async (_req, res) => {
   }
 };
 
-const getById: RequestHandler = async (req, res) => {
+const getById: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = doctorIdSchema.parse({ id });
@@ -39,7 +46,10 @@ const getById: RequestHandler = async (req, res) => {
   }
 };
 
-const update: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = doctorIdSchema.parse({ id });
@@ -59,7 +69,10 @@ const update: RequestHandler = async (req, res) => {
   }
 };
 
-const remove: RequestHandler = async (req, res) => {
+const remove: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = doctorIdSchema.parse({ id });
@@ -75,7 +88,10 @@ const remove: RequestHandler = async (req, res) => {
   }
 };
 
-const assignToClinic: RequestHandler = async (req, res) => {
+const assignToClinic: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = doctorIdSchema.parse({ id });

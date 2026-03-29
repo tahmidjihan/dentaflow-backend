@@ -9,8 +9,12 @@ import {
 import { AppointStatus } from '../generated/prisma/enums';
 import { auth } from '../lib/auth';
 import userService from '../users/users.service';
+import express from 'express';
 
-const get: RequestHandler = async (_req, res) => {
+const get: RequestHandler = async (
+  _req: express.Request,
+  res: express.Response,
+) => {
   try {
     const appointments = await appointmentService.get();
     return res.json(appointments);
@@ -20,7 +24,10 @@ const get: RequestHandler = async (_req, res) => {
   }
 };
 
-const getById: RequestHandler = async (req, res) => {
+const getById: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = appointmentIdSchema.parse({ id });
@@ -41,7 +48,10 @@ const getById: RequestHandler = async (req, res) => {
   }
 };
 
-const create: RequestHandler = async (req, res) => {
+const create: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const validated = createAppointmentSchema.safeParse(req.body);
     if (!validated.success) {
@@ -62,7 +72,10 @@ const create: RequestHandler = async (req, res) => {
   }
 };
 
-const update: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validatedParams = appointmentIdSchema.parse({ id });
@@ -88,7 +101,10 @@ const update: RequestHandler = async (req, res) => {
   }
 };
 
-const updateStatus: RequestHandler = async (req, res) => {
+const updateStatus: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -116,7 +132,10 @@ const updateStatus: RequestHandler = async (req, res) => {
   }
 };
 
-const getMyAppointments: RequestHandler = async (req, res) => {
+const getMyAppointments: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     // Get current user from session
     const session = await auth.api.getSession({
@@ -141,7 +160,10 @@ const getMyAppointments: RequestHandler = async (req, res) => {
   }
 };
 
-const getDoctorAppointments: RequestHandler = async (req, res) => {
+const getDoctorAppointments: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
 
@@ -182,7 +204,10 @@ const getDoctorAppointments: RequestHandler = async (req, res) => {
   }
 };
 
-const remove: RequestHandler = async (req, res) => {
+const remove: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+) => {
   try {
     const { id } = req.params;
     const validated = appointmentIdSchema.parse({ id });
