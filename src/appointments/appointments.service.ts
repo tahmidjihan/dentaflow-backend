@@ -24,13 +24,6 @@ const get = async () => {
           image: true,
         },
       },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
-        },
-      },
     },
   });
   return appointments;
@@ -58,13 +51,6 @@ const getById = async (id: string) => {
           image: true,
         },
       },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
-        },
-      },
     },
   });
   return appointment;
@@ -88,13 +74,6 @@ const getByUserId = async (userId: string) => {
           name: true,
           email: true,
           image: true,
-        },
-      },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
         },
       },
     },
@@ -123,13 +102,6 @@ const getByDoctorId = async (doctorId: string) => {
           image: true,
         },
       },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
-        },
-      },
     },
     orderBy: { date: 'desc' },
   });
@@ -141,7 +113,7 @@ const create = async (data: CreateAppointmentInput) => {
     data: {
       userId: data.userId,
       doctorId: data.doctorId,
-      clinicId: data.clinicId,
+
       date: data.date,
       status: data.status as AppointStatus,
     },
@@ -160,13 +132,6 @@ const create = async (data: CreateAppointmentInput) => {
           name: true,
           email: true,
           image: true,
-        },
-      },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
         },
       },
     },
@@ -198,13 +163,6 @@ const update = async (data: { id: string } & UpdateAppointmentInput) => {
           image: true,
         },
       },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
-        },
-      },
     },
   });
   return appointment;
@@ -229,13 +187,6 @@ const updateStatus = async (id: string, status: AppointStatus) => {
           name: true,
           email: true,
           image: true,
-        },
-      },
-      clinic: {
-        select: {
-          id: true,
-          name: true,
-          location: true,
         },
       },
     },

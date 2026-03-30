@@ -101,7 +101,6 @@ model Clinic {
   location     String
   createdAt    DateTime      @default(now())
   doctors     User[]
-  appointments Appointment[]
 }
 
 model Appointment {
@@ -115,8 +114,6 @@ model Appointment {
   user        User          @relation("UserAppointments", fields: [userId], references: [id])
   doctorId String
   doctor      User          @relation("DoctorAppointments", fields: [doctorId], references: [id])
-  clinicId String
-  clinic   Clinic @relation(fields: [clinicId], references: [id])
   payment  Payment?
 }
 model Payment {

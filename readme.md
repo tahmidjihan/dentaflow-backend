@@ -67,9 +67,19 @@ Backend API for DentaFlow - A dental clinic management system built with Node.js
    npx prisma generate
    ```
 
-5. **Seed admin user (optional)**
+5. **Create admin user**
+
+   Sign up using the following credentials to create the first admin user:
+
+   ```
+   Email: admin@dentaflow.com
+   Password: Admin123!
+   ```
+
+   Then manually update the user's role to `ADMIN` in the database:
+
    ```bash
-   npx ts-node src/seedAdmin.ts
+   npx prisma studio
    ```
 
 ## 🏃 Running the Server

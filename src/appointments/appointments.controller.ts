@@ -211,6 +211,32 @@ const remove: RequestHandler = async (
   try {
     const { id } = req.params;
     const validated = appointmentIdSchema.parse({ id });
+
+    // Get current user from session
+    const session = await auth.api.getSession({
+      headers: new Headers(req.headers as any),
+    });
+    if (!session?.user?.email) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Get current user to check ownership
+    const currentUser = await userService.getByEmail(session.user.email);
+    if (!currentUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get appointment to check ownership
+    const appointment = await appointmentService.getById(validated.id);
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    // Only allow appointment owner or admin to delete
+    if (currentUser.role !== 'ADMIN' && appointment.userId !== currentUser.id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
     await appointmentService.remove(validated.id);
     return res.status(204).send();
   } catch (error) {

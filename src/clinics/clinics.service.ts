@@ -11,6 +11,17 @@ const getById = (id: string) => {
     where: {
       id: id,
     },
+    include: {
+      doctors: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          clinicId: true,
+        },
+      },
+    },
   });
   return clinic;
 };
