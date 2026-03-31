@@ -10,12 +10,15 @@ Backend API for DentaFlow - A modern dental clinic management system built with 
 
 ---
 
-## 🌐 Live API
+## 🌐 Live Links
 
 | Service | URL |
 |---------|-----|
-| **Backend API** | [https://dentaflow-backend.vercel.app/](https://dentaflow-backend.vercel.app/) |
-| **Health Check** | [https://dentaflow-backend.vercel.app/health](https://dentaflow-backend.vercel.app/health) |
+| **Frontend Repo** | [https://github.com/your-username/project-frontend](https://github.com/your-username/project-frontend) |
+| **Backend Repo** | [https://github.com/your-username/project-backend](https://github.com/your-username/project-backend) |
+| **Frontend Live** | [https://project-frontend.vercel.app](https://project-frontend.vercel.app) |
+| **Backend Live** | [https://project-backend.vercel.app](https://project-backend.vercel.app) |
+| **Demo Video** | [https://drive.google.com/file/d/abc/view](https://drive.google.com/file/d/abc/view) |
 
 ---
 
@@ -135,8 +138,8 @@ backend/
 
    Sign up with the admin credentials:
    ```
-   Email: admin@admin.com
-   Password: Admin123!
+   Email: admin@project.com
+   Password: admin123
    ```
 
    Then update the user role in the database:
@@ -329,7 +332,7 @@ The application uses **better-auth** for session-based authentication.
 To access protected routes (e.g., appointments), include the session token:
 
 ```bash
-curl -H "Authorization: Bearer <session-token>" https://dentaflow-backend.vercel.app/api/appointments
+curl -H "Authorization: Bearer <session-token>" https://project-backend.vercel.app/api/appointments
 ```
 
 ### Auth Middleware
@@ -344,24 +347,24 @@ The `requireAuth` middleware from `src/lib/authMiddleware.ts` protects routes th
 
 ```bash
 # Health check
-curl https://dentaflow-backend.vercel.app/health
+curl https://project-backend.vercel.app/health
 
 # Get all clinics
-curl https://dentaflow-backend.vercel.app/api/clinics
+curl https://project-backend.vercel.app/api/clinics
 
 # Get all doctors
-curl https://dentaflow-backend.vercel.app/api/doctors
+curl https://project-backend.vercel.app/api/doctors
 
 # Get all users
-curl https://dentaflow-backend.vercel.app/api/users
+curl https://project-backend.vercel.app/api/users
 
 # Create a clinic
-curl -X POST https://dentaflow-backend.vercel.app/api/clinics \
+curl -X POST https://project-backend.vercel.app/api/clinics \
   -H "Content-Type: application/json" \
   -d '{"name":"Test Clinic","email":"test@clinic.com","phone":"123456","location":"Test Location"}'
 
 # Create a payment (appointment must exist)
-curl -X POST https://dentaflow-backend.vercel.app/api/payments/create-payment \
+curl -X POST https://project-backend.vercel.app/api/payments/create-payment \
   -H "Content-Type: application/json" \
   -d '{"appointmentId":"cmna0ubku00015li549faqj68","user":"user-id","doctor":"doctor-id","amount":2000}'
 ```
