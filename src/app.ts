@@ -17,8 +17,12 @@ const PORT = process.env.PORT || 8000;
 
 // Middleware
 const allowedOrigins = [
-  process.env.ORIGIN_URL || 'http://localhost:3000',
-].filter(Boolean); // Remove undefined values
+  process.env.ORIGIN_URL,
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+].filter(Boolean) as string[]; // Remove undefined values
+
+console.log('[CORS] Allowed origins:', allowedOrigins);
 
 app.use(
   cors({
@@ -29,8 +33,9 @@ app.use(
       // Check if origin is in allowedOrigins or matches Vercel preview pattern
       const isAllowed =
         allowedOrigins.includes(origin) ||
-        /^https:\/\/next-blog-client.*\.vercel\.app$/.test(origin) ||
         /^https:\/\/.*\.vercel\.app$/.test(origin); // Any Vercel deployment
+
+      console.log(`[CORS] Origin: ${origin}, Allowed: ${isAllowed}`);
 
       if (isAllowed) {
         callback(null, true);
