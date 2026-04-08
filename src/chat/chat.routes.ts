@@ -49,7 +49,9 @@ router.post('/chat', async (req: Request, res: Response) => {
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'OpenRouter API key not configured' });
+      return res
+        .status(500)
+        .json({ error: 'OpenRouter API key not configured' });
     }
 
     // Prepend system prompt
@@ -58,21 +60,24 @@ router.post('/chat', async (req: Request, res: Response) => {
       ...messages,
     ];
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://dentaflow-rho.vercel.app',
-        'X-Title': 'DentaWave Dental Assistant',
+    const response = await fetch(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+          'HTTP-Referer': 'https://dentaflow-rho.vercel.app',
+          'X-Title': 'DentaWave Dental Assistant',
+        },
+        body: JSON.stringify({
+          model: 'openrouter/free',
+          messages: allMessages,
+          max_tokens: 500,
+          temperature: 0.7,
+        }),
       },
-      body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
-        messages: allMessages,
-        max_tokens: 500,
-        temperature: 0.7,
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -84,7 +89,9 @@ router.post('/chat', async (req: Request, res: Response) => {
     }
 
     const data = await response.json();
-    const assistantMessage = data.choices?.[0]?.message?.content || 'Sorry, I could not process your request. Please try again.';
+    const assistantMessage =
+      data.choices?.[0]?.message?.content ||
+      'Sorry, I could not process your request. Please try again.';
 
     return res.json({
       role: 'assistant',
