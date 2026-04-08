@@ -9,6 +9,7 @@ import appointmentsRouter from './appointments/appointments.routes.js';
 import doctorsRouter from './doctors/doctors.routes.js';
 import usersRouter from './users/users.routes.js';
 import paymentsRouter from './payments/payments.routes.js';
+import chatRouter from './chat/chat.routes.js';
 import Stripe from 'stripe';
 dotenv.config();
 
@@ -65,6 +66,7 @@ app.use('/api/appointments', appointmentsRouter);
 app.use('/api/doctors', doctorsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/chat', chatRouter);
 
 // Auth middleware - use wildcard pattern for Express v5 compatibility
 app.all('/api/auth/*splat', toNodeHandler(auth));
